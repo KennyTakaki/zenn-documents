@@ -2,7 +2,7 @@
 title: "AWS nuke の記事です"
 emoji: "😊"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: []
+topics: [AWS]
 published: false
 ---
 
