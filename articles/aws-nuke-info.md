@@ -7,3 +7,4 @@ published: false
 ---
 
 this is sample article
+スマホからの編集テスト
