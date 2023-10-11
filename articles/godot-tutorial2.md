@@ -19,5 +19,8 @@ https://zenn.dev/frommiddle1/articles/godot-tutorial
 以下を参考に進める。
 https://docs.godotengine.org/en/stable/getting_started/introduction/first_look_at_the_editor.html
 エディタを立ち上げて最初に表示されるのは Project Manager である。既存プロジェクトのインポートや新しいプロジェクトを作成したりできる。
-Asset Library Projects というもう一つのタブはこみにゅてぃによって開発された多くのプロジェクトを含むオープンソースのアセットライブラリから、でもプロジェクトを検索することができる。  
+Asset Library Projects というもう一つのタブはコミュニティによって開発された多くのプロジェクトを含むオープンソースのアセットライブラリから、でもプロジェクトを検索することができる。  
 言語切り替えは右上のプルダウンから可能である。
+
+![Alt text](/images/articles/godot-tutorial2/image.png)
+
