@@ -3,7 +3,7 @@ title: "Godot でゲーム開発がしてみたい 3"
 emoji: "🙆"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [game,Godot]
-published: false
+published: true
 ---
 
 前回
