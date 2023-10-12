@@ -10,7 +10,7 @@ published: true
 https://zenn.dev/frommiddle1/articles/godot-tutorial2
 
 前々回
-https://zenn.dev/articles/godot-tutorial/edit
+https://zenn.dev/articles/godot-tutorial
 
 ## Learning new features
 
