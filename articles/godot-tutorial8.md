@@ -23,8 +23,7 @@ https://docs.godotengine.org/en/stable/getting_started/step_by_step/scripting_fi
 この章では、GDScriptを使ってGodotのアイコンをぐるぐる回す最初のスクリプトをコーディングする。
 
 ### プロジェクト準備（Project setup）
-まっさらな状態から始めるために、新しいプロジェクトを作成する。プロジェクト内にSprite2Dno
-シーンを作成する。
+まっさらな状態から始めるために、新しいプロジェクトを作成する。プロジェクト内にSprite2Dのシーンを作成する。
 ![Alt text](/images/articles/godot-tutorial8/Sprite2D.png)
 
 Sprite2Dノードを表示するには、テクスチャが必要なので追加する。
@@ -36,7 +35,7 @@ Sprite2Dノードを表示するには、テクスチャが必要なので追加
 これでスクリプトを適用するシーンが作成できた。
 
 ### 新規スクリプトを作る（Creating a new script）
-シーンドックからSprite2Dを選択してスクリプトをアタッチしていく。TemplateはObject:Emptyに設定す。言語はGDScriptに設定する。
+シーンドックからSprite2Dを選択してスクリプトをアタッチしていく。TemplateはObject:Emptyに設定する。言語はGDScriptに設定する。
 ![Alt text](/images/articles/godot-tutorial8/AttachScript.png)
 ![Alt text](/images/articles/godot-tutorial8/MakeFile.png)
   
@@ -88,8 +87,7 @@ func _process(delta):
 
 ```
 
-funcキーワードは新しい関数を定義できる。関数の名前と引数を括弧で囲んで書いてコロンで定義を終え、そ
-の後に続くインデントされたブロックが関数の内容や命令となる。Pythonの記述と同じだ。
+funcキーワードは新しい関数を定義できる。関数の名前と引数を括弧で囲んで書いてコロンで定義を終え、その後に続くインデントされたブロックが関数の内容や命令となる。Pythonの記述と同じだ。
 （サラッと出てきているけど、PIも組み込みの予約語なのだろう。）
 
 補足に記述があったが、気になっていたアンスコ始まりの関数はGodotのエンジンと通信するためにオーバーライドできる関数らしい。自前で定義する関数にはアンスコを先頭につけてはだめだ。
