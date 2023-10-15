@@ -6,7 +6,7 @@ topics: [game,Godot]
 published: true
 ---
 Godot DocsのIntroductionを一通り見てきたので、Step by Stepの章に着手する。
-この記事では以下のトピックからListening to player inputtを学習する。これらのトピックは次の章であるYour first 2D gameの準備となる。これらのトピックで基礎がかなり身につくらしい。
+この記事では以下のトピックからListening to player inputを学習する。これらのトピックは次の章であるYour first 2D gameの準備となる。これらのトピックで基礎がかなり身につくらしい。
 - Nodes and Scenes
 - Creating instances 
 - Scripting languages
