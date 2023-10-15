@@ -7,7 +7,7 @@ published: true
 ---
 
 # 目的
-現在Godotを学習中だ。シグナルに関してチュートリアルで一通りさらったが、もう一段理解を深めるためにおさらいをしようと思う。特にカスタムシグナルに関してはTutorialが舌足らずだったので一通りサンプル実装を施して挙動を確認してみる。
+現在Godotを学習中だ。シグナルに関してチュートリアルで一通りさらったが、もう一段理解を深めるためにおさらいをしようと思う。特にカスタムシグナルに関してはTutorialが舌足らずだったので一通りサンプル実装を施して挙動を確認してみる。カスタムシグナルのサンプルがほしい場合はカスタムシグナルのサンプル実装まで飛ぶといい。
 
 概念的な理解～コードレベルでの理解までを行う。
 
@@ -32,14 +32,12 @@ observer pattern はソフトウェア開発で利用されるデザインパタ
 
 observerは何かが起きて、それが通知された際に実行する処理を持っている。ここではこの処理のことをonNotifyと呼ぶ。
 
-Subjectは何かが起こった時に通知する相手のリストとそのリストを外から変更（追加/削除）するため
-方法を提供する。ここでは追加方法をaddObserver、削除方法をremoveObserverと呼ぶ。
+Subjectは何かが起こった時に通知する相手のリストとそのリストを外から変更（追加/削除）するための方法を提供する。ここでは追加方法をaddObserver、削除方法をremoveObserverと呼ぶ。
 そして、Subjectはリストに入っている相手に対しての通知方法を持っている。ここではこの通知方法をnotifyと呼ぶ。
   
 ここまでの理解を図にすると以下のようになる。
 
 ![Alt text](/images/articles/godot-signal-comprehension/observer-subject.png)
-
 これを先ほどのシューティングゲームの当てはめると以下のような例が考えられる。敵機(enemy)がアイテム（bomb）に対してaddObserverを呼び出して自身を通知先として登録する。
 
 ![Alt text](/images/articles/godot-signal-comprehension/register.png)
@@ -52,7 +50,7 @@ bombは（ここでは記述していないが）プレイヤーと触れた際�
 さて、チュートリアルで学習した際にはボタンがプレイヤーに作用した（ボタンを押すとプレイヤーの動きが止まる）
 https://zenn.dev/frommiddle1/articles/godot-tutorial10
 
-まず最初にエディタでSprite2DノードとButtunノードを用意し、エディタの機能でButtunノードにSprite2Dを接続した。手順の中でpressed()シグナルの接続先をSprite2Dのスクリプトに向けることで関係性を作成した。関係性を作成したときに自動でSprite2Dに_on_button_pressed()関数が作成された。これは図にすると以下のように理解できる。これまでのonNotifyが_on_button_pressedであり、pressedがnotifyに相当する。
+まず最初にエディタでSprite2DノードとButtonノードを用意し、エディタの機能でButtonノードにSprite2Dを接続した。手順の中でpressed()シグナルの接続先をSprite2Dのスクリプトに向けることで関係性を作成した。関係性を作成したときに自動でSprite2Dに_on_button_pressed()関数が作成された。これは図にすると以下のように理解できる。これまでのonNotifyが_on_button_pressedであり、pressedがnotifyに相当する。
 ![Alt text](/images/articles/godot-signal-comprehension/editor.png)
 
 editorの機能で暗黙にaddObserverが実行されていることになる。（設定を削除すれば、removeObserverの呼び出しに等しい）
