@@ -3,7 +3,7 @@ title: "Godot で最初の2Dゲームを作る 04"
 emoji: "✨"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [game,Godot]
-published: false
+published: true
 ---
 チュートリアルの総まとめとして2Dゲームを作成してく。第四回目。
 https://docs.godotengine.org/en/stable/getting_started/first_2d_game/index.html
