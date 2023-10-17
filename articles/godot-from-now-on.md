@@ -3,7 +3,7 @@ title: "ゲーム制作でこれから何を学ぶか"
 emoji: "😎"
 type: "idea" # tech: 技術記事 / idea: アイデア
 topics: [game]
-published: false
+published: true
 ---
 
 topicsが idea の記事を書くのは始めてだ。
