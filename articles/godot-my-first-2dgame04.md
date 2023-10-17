@@ -5,14 +5,14 @@ type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [game,Godot]
 published: false
 ---
-チュートリアルの総まとめとして2Dゲームを作成してく。第三回目。Enemyの作成を行う。
+チュートリアルの総まとめとして2Dゲームを作成してく。第四回目。
 https://docs.godotengine.org/en/stable/getting_started/first_2d_game/index.html
 
 ここまででプレーヤーと敵の準備ができたので、次のパートでは、新しいシーンでそれらをひとつにまとめる。敵がゲームボードの周りでランダムにスポーンして前進するようにし、プロジェクトをプレイ可能なゲームに変える。
 
 ## The main game scene
 
-新しいシーンを作成し、Mainという名前のNodeを追加する。Node2DではなくNodeを使う。Node2D出ない理由は、このノードがゲームロジックを扱うコンテナになるからだ。2Dの機能自体はMainに必要ない。そのため一番基底に近いノードでよい。
+新しいシーンを作成し、Mainという名前のNodeを追加する。Node2DではなくNodeを使う。Node2Dではない理由は、このノードがゲームロジックを扱うコンテナになるからだ。2Dの機能自体はMainに必要ない。そのため一番基底に近いノードでよい。
 
 Instanceボタン（鎖のリンクアイコン）をクリックし、保存したplayer.dscnを選択する。
 
@@ -88,7 +88,7 @@ func new_game():
 	$StartTimer.start()
 ```
 
-ここで、各タイマーノード（StartTimer、ScoreTimer、MobTimer）のtimeout()シグナルをメインスクリプトに接続する。StartTimerは他の2つのタイマーをスタートさせ、ScoreTimerはスコアを1増やします。
+ここで、各タイマーノード（StartTimer、ScoreTimer、MobTimer）のtimeout()シグナルをメインスクリプトに接続する。StartTimerは他の2つのタイマーをスタートさせ、ScoreTimerはスコアを1増やす。
 
 
 on_mob_timer_timeout()では、モブのインスタンスを作成し、Path2Dに沿ってランダムな開始位置を選び、モブを動かすように設定する。PathFollow2Dノードはパスに沿って自動的に回転するので、それを使ってモブの方向と位置を選択する。モブをスポーンするとき、各モブの移動速度は150.0から250.0の間のランダムな値を選ぶことにする。
@@ -123,9 +123,12 @@ func _on_mob_timer_timeout():
 
 Let's test the scene to make sure everything is working. Add this new_game call to _ready():
 
-``func _ready():
+```
+func _ready():
 	new_game()
 ```
 
 ここまででひとまずゲームの大枠ができているはずだ。
 ![Alt text](/images/articles/godot-my-first-2dgame04/game.png)
+
+今回はここまで。
