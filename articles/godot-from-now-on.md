@@ -26,7 +26,12 @@ https://docs.godotengine.org/en/stable/getting_started/introduction/index.html
 https://youtu.be/KhDiIX5rP5c?si=jw4mtOQlcTnTkflE&t=1430
 
 5. 参考となるゲームと、そのソースコードを確認する
-目的ベースで学習ができる。効率の良い学習ができるはずだが、チュートリアルや人のものをコピーしているだけでは少しつなまらない。
+目的ベースで学習ができる。効率の良い学習ができるはずだが、チュートリアルや人のものをコピーしているだけでは少しつなまらない。参考は以下
+- アセットライブラリ（まずはOverviewを読む）
+https://docs.godotengine.org/en/stable/community/asset_library/using_assetlib.html#overview
+- Turorial and resoruces
+https://docs.godotengine.org/en/stable/community/tutorials.html
+
 6. オリジナルの簡易ゲームの設計/実装を実施してみる
 これが本丸だが、1～4で身に着けたものの練度で開発速度が変わると思う。便利なAPIを知っていれば車輪の再発明をしないし、スムーズだ。
 
