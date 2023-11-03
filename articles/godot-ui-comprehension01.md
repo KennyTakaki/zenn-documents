@@ -1,5 +1,5 @@
 ---
-title: "GodotでのUI構築を理解する"
+title: "GodotでのUI構築を理解する01"
 emoji: "🎉"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [game,Godot]
