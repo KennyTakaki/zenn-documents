@@ -3,7 +3,7 @@ title: "GodotのCanvasLayersを理解する"
 emoji: "🐥"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [game,Godot]
-published: false
+published: true
 ---
 
 # 描画に関する基本を理解する
