@@ -3,7 +3,7 @@ title: "生成系AI(Amazon BedRock)のハンズオンに参加　JAWS-UG名古�
 emoji: "🐙"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [AWS,JAWS,BedRock]
-published: false
+published: true
 ---
 # 生成系AIのハンズオンイベントに参加（JAWS-UG名古屋）
 
