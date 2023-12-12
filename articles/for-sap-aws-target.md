@@ -6,16 +6,27 @@ topics: [AWS,SolutionArchitect]
 published: false
 ---
 
+---
+title: "SAProに向けた学習"
+emoji: "😸"
+type: "idea" # tech: 技術記事 / idea: アイデア
+topics: [AWS,SolutionArchitect]
+published: false
+---
+
 # 目的
 そろそろ真面目にAWS Certified Solutions Architect - Professionalを取得しようと思う。簡単に学習して、足りないと感じている項目をリスト化していく。
 
 # 学習対象
 - hoge
+残念ながらExam Prepで日本語のものは古いバージョンのテストのみ。
+
 
 # Skill Builderの目ぼしいコース
 |service|course|time|tier|level|
 | ---- |----|----|----|----|
-|CLF|Exam Prep Enhanced Course: AWS Certified Cloud Practitioner (CLF-C02 - English)||||
+|Exam|Exam Prep Enhanced Course: AWS Certified Cloud Practitioner (CLF-C02 - English)||||
+|Exam|Exam Prep Enhanced Course: AWS Certified Solutions Architect - Professional (SAP-C02) |3h|||
 |AWS Elastic Beanstalk|Migrating Web Application to Cloud using AWS Elastic Beanstalk (Japanese)|1h|||
 |ELB|Working with Elastic Load Balancing (Japanese) |1h|||
 |ELB|Elastic Load Balancing (ELB) - Troubleshooting |1.5h|Free|基礎|
