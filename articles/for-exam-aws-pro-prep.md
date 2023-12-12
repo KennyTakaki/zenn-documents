@@ -11,6 +11,10 @@ published: false
 たんに取得するだけなら一ヶ月ほど机上学習すれば受かると思う。
 賛否はあるが、非公式な試験問題サイトでパターン学習したらもっと短縮できるかもしれない。
 
+https://qiita.com/jinto/items/8c31ce74520e933e254c
+
+https://nokonokonetwork.com/certificate/aws/dubious-reputation_aws_koiwa_techstock.html
+
 # 学習方法
 ちょっと考えてみて、学習方法の候補は大きく分けて以下かなと思っている。
 |方法|メリット|デメリット|
