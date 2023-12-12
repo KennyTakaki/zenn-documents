@@ -2,14 +2,7 @@
 title: "DOPに向けた学習コンテンツ"
 emoji: "😸"
 type: "idea" # tech: 技術記事 / idea: アイデア
-topics: []
-published: false
----
----
-title: "SAProに向けた学習"
-emoji: "😸"
-type: "idea" # tech: 技術記事 / idea: アイデア
-topics: [AWS,SolutionArchitect]
+topics: [AWS,DevOpsEngineer]
 published: false
 ---
 
