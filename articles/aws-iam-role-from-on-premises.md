@@ -41,14 +41,3 @@ https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manag
 ![Alt text](/images/articles/aws-iam-role-from-on-premises/winproc.png)
 
 プライベートキーの自動ローテーションは設定しておいた方がよさそう
-
-$code = "L9RCEXhgYDcueXjy7Pg9"
-$id = "6ac54bee-c014-4e59-8e15-e3967c0a1df2"
-$region = "ap-northeast-1"
-$dir = $env:TEMP + "\ssm"
-New-Item -ItemType directory -Path $dir -Force
-cd $dir
-(New-Object System.Net.WebClient).DownloadFile("https://amazon-ssm-$region.s3.$region.amazonaws.com/latest/windows_amd64/AmazonSSMAgentSetup.exe", $dir + "\AmazonSSMAgentSetup.exe")
-Start-Process .\AmazonSSMAgentSetup.exe -ArgumentList @("/q", "/log", "install.log", "CODE=$code", "ID=$id", "REGION=$region") -Wait
-Get-Content ($env:ProgramData + "\Amazon\SSM\InstanceData\registration")
-Get-Service -Name "AmazonSSMAgent"
