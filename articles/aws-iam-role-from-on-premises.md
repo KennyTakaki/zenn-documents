@@ -40,9 +40,6 @@ https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manag
 ![Alt text](/images/articles/aws-iam-role-from-on-premises/registered.png)
 ![Alt text](/images/articles/aws-iam-role-from-on-premises/winproc.png)
 
-Activation Code   L9RCEXhgYDcueXjy7Pg9
-Activation ID   6ac54bee-c014-4e59-8e15-e3967c0a1df2 
-
 プライベートキーの自動ローテーションは設定しておいた方がよさそう
 
 $code = "L9RCEXhgYDcueXjy7Pg9"
