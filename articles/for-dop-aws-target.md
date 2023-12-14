@@ -34,6 +34,7 @@ published: false
 |Code3兄弟|Create a CI/CD pipeline to deploy your app to AWS Fargate|1h||Intermediate|
 |Systems Manager|Lab - Using the AWS Systems Manager Run Command for Automation|1h||Fundamental|
 |Amazon Inspector|Scale Your Security Vulnerability Testing with Amazon Inspector |2h 30m||Intermediate|
+|AWS Elastic Beanstalk|Migrating Web Application to Cloud using AWS Elastic Beanstalk (Japanese)|1h|||
 ||||||
 ||||||
 ||||||
