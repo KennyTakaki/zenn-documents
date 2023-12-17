@@ -1,5 +1,5 @@
 ---
-title: "DOPに向けた学習コンテンツ"
+title: "DOPに向けたSkill Builderの学習コンテンツ"
 emoji: "😸"
 type: "idea" # tech: 技術記事 / idea: アイデア
 topics: [AWS,DevOpsEngineer]

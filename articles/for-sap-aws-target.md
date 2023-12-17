@@ -1,5 +1,5 @@
 ---
-title: "SAProに向けた学習"
+title: "SAProに向けたSkillBuilderの学習コンテンツ"
 emoji: "😸"
 type: "idea" # tech: 技術記事 / idea: アイデア
 topics: [AWS,SolutionArchitect]
