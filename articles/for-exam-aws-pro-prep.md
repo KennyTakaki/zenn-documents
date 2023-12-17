@@ -42,3 +42,10 @@ https://nokonokonetwork.com/certificate/aws/dubious-reputation_aws_koiwa_techsto
 https://pages.awscloud.com/jp-cloud-practitioner-certification-challenge.html?sc_icampaign=awareness-practitioner-challenge-2023-ribbon&sc_ichannel=ha&sc_icontent=jp-traincert-practitioner-challenge-2023&sc_iplace=ribbon&trk=60bcffac-fdd5-4733-9460-99ecdf93ecc2
 
 久々にTraining and Certificationのコンソールにログインしたら不具合なのか利用できなかった…早くトラブル解決しないかな。
+
+# Ref
+#### SAProの学習リスト
+https://zenn.dev/frommiddle1/articles/for-sap-aws-target
+
+#### DOPの学習リスト
+https://zenn.dev/frommiddle1/articles/for-dop-aws-target
