@@ -12,15 +12,15 @@ published: true
 残念ながらExam Prepで日本語のものは古いバージョンのテストのみ。
 
 # Skill Builderの目ぼしいコース
-|service|course|time|tier|level|
-| ---- |----|----|----|----|
-|Exam|Exam Prep Enhanced Course: AWS Certified Solutions Architect - Professional (SAP-C02) |3h|||
-|AWS Elastic Beanstalk|Migrating Web Application to Cloud using AWS Elastic Beanstalk (Japanese)|1h|||
-|ELB|Working with Elastic Load Balancing (Japanese) |1h|||
-|ELB|Elastic Load Balancing (ELB) - Troubleshooting |1.5h|Free|基礎|
-|ELB|Introduction to Elastic Load Balancing (Japanese)|1h|||
-|ALB|Getting Started with Application Load Balancer (Japanese)|1h||基礎|
-|RDS,ElasticCache,EFS|Building Highly Available Web Application (Japanese)|1.5||Intermediate|
+|service|course|time|tier|level|補足|
+| ---- |----|----|----|----|----|
+|Exam|Exam Prep Enhanced Course: AWS Certified Solutions Architect - Professional (SAP-C02) |3h||||
+|AWS Elastic Beanstalk|Migrating Web Application to Cloud using AWS Elastic Beanstalk (Japanese)|1h||||
+|ELB|Working with Elastic Load Balancing (Japanese) |1h|||生きている。簡単すぎる|
+|ELB|Elastic Load Balancing (ELB) - Troubleshooting |1.5h|Free|基礎||
+|ELB|Introduction to Elastic Load Balancing (Japanese)|1h|||ラボは現在メンテナンス中です。後でもう一度試すか、別のラボを選択してください。
+|ALB|Getting Started with Application Load Balancer (Japanese)|1h||基礎||
+|RDS,ElasticCache,EFS|Building Highly Available Web Application (Japanese)|1.5||Intermediate||
 |WAF|Filtering and blocking web incursions with AWS WAF (Japanese)|1.5h||Intermediate|
 |ECS|Building and Deploying Containers Using Amazon Elastic Container Service |1.5||基礎|
 |Serverless|Build a Serverless Architecture with Amazon Simple Notification Service, Amazon Simple Queue Service, and AWS Lambda|1h||Intermediate|
