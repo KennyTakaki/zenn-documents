@@ -8,6 +8,8 @@ published: true
 
 # JAWS-UG名古屋2023年12月 参加記録
 
+今月のJAWS-UG名古屋はre:Inventのre:CapのLT大会でした。皆さんのいろんな観点から報告を聞けて、とても楽しむことができました。
+
 ## 	AWS Step Functionsの新機能「Call third-party API」を試してみた
 #### JAWS-UG 名古屋　三浦さん
 
