@@ -3,7 +3,7 @@ title: "補足資料：JAWS-UG名古屋 2024 Copilot Primer Workshop"
 emoji: "🐕"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [AWS,JAWSUG]
-published: false
+published: true
 ---
 
 # この記事の目的と使い方
@@ -13,7 +13,7 @@ https://catalog.us-east-1.prod.workshops.aws/workshops/d03316be-3c29-49db-8dc3-e
 以降の章立てはワークショップと合わせています。もし手順で不明点や詰まった場合があったら当該の章を参照してみてください。
 
 #### 当日ハンズをフォロー可能なメンバー
-
+JAWS-UG 名古屋のスタッフがフォローできます。気軽に手を挙げたり声をかけて下さい。
 
 # 導入
 特にありません。利用するリージョンに注意してください。
@@ -84,13 +84,38 @@ showを押すとSecret access keyが表示されるので、Access Keyととも�
 （このハンズオン記載の方法でストレージを増量させる場合、Cloud9のインスタンスを作成する際のOSイメージをAmazonLinux2に設定してください。）
 
 # Copilotを用いた TODO アプリの作成
+特にありません。
 ## Application と Evironment の作成
+特にありません。
 ## baackend Service の作成
+各コマンドでそこそこ時間を要します。リソースを作成するコマンドは5~7分ほどかかるので、トイレ休憩に都合がよいです。
+
+
+``` copilot svc init ``` の対話シェルは以下の順で実施されます。（ハンズオン資料の工程の１行目と２行目が逆です）
+
+``` 
+Which service type best represents your service's architecture? : Backend Service を選択して Enter
+What do you want to name this service?: backend
+Which Dockerfile would you like to use for backend? : backend/Dockerfile を選択して Enter
+```
+
 ## frontend Service の作成
+``` copilot svc init ``` の対話シェルは以下の順で実施されます。（ハンズオン資料の工程の１行目と２行目が逆です）
+
+``` 
+Which service type best represents your service's architecture? : Load Balanced Web Service を選択して Enter
+What do you want to name this service?: frontend
+Which Dockerfile would you like to use for frontend? : frontend/Dockerfile を選択して Enter
+```
 
 # CI/CDパイプラインの作成
+To write
 ## (オプション)本番環境用アカウントでの準備
+To write
 ## Pipeline の作成
+To write
 
 # 後片付け
+To write
 ## 作成したリソースの削除
+``` copilot app delete ``` の実行にはかなり時間がかかります。CI/CDパイプラインを作成しない場合でも15分ほどを要します。
