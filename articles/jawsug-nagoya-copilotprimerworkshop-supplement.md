@@ -15,7 +15,7 @@ https://catalog.us-east-1.prod.workshops.aws/workshops/d03316be-3c29-49db-8dc3-e
 #### 当日ハンズをフォロー可能なメンバー
 
 
-# 導入(～10分)
+# 導入
 特にありません。利用するリージョンに注意してください。
 
 ## ワークショップのゴール
