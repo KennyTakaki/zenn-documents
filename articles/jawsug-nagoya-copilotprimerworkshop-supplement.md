@@ -7,10 +7,21 @@ published: true
 ---
 
 # この記事の目的と使い方
+
+#### まず最初に…本ハンズオンでは、IAMのアクセスキー/シークレットキーを作成する手順があります。ハンズオン終了後、必ず、絶対、確実に削除してください。 
+  
 この記事は2024/1/23(火)に実施する「JAWS-UG 名古屋 Amazon ECSハンズオン」の補足資料です。ハンズオンの資料は以下です。ハンズオンをスムーズに実施するための追加情報を提供します。
 https://catalog.us-east-1.prod.workshops.aws/workshops/d03316be-3c29-49db-8dc3-eb196c1778c9/ja-JP
 
+
 以降の章立てはワークショップと合わせています。もし手順で不明点や詰まった場合があったら当該の章を参照してみてください。
+本ハンズオンではコマンドの待ち時間が発生することが何度かあります。その際にトイレ休憩をとってください。下記の動画も今回のハンズオンのサプリメントとしてよいと思いますので是非ご視聴ください。
+CICDまで含めて実施すると、今日の作業時間範囲に収まらない可能性もありますので、目安としてはbackend, frontendそれぞれのServiceを作成して、環境削除を実施するのをお勧めします。
+CICD抜きの場合、削除の時間には15分ほどを要するので、この時間に動画を観るのもおすすめです。
+
+https://www.youtube.com/watch?v=-xqg95QBK2M
+
+
 
 #### 当日ハンズをフォロー可能なメンバー
 JAWS-UG 名古屋のスタッフがフォローできます。気軽に手を挙げたり声をかけて下さい。
@@ -31,8 +42,10 @@ JAWS-UG 名古屋のスタッフがフォローできます。気軽に手を挙
 特にありません。
 ## 開発用アカウントにCloud9環境の作成
 Cloud9のインスタンスを構築する際に注意が必要です。Cloud9はEC2インスタンスをベースとして稼働します。このEC2インスタンスがSSMのエンドポイントと通信可能な設定とする必要があります。
+デフォルトのVPCであれば問題なく起動すると思われます。
 
-簡易的な方法としては、EIPを取得してパブリックサブネットに配置したEC2インスタンスに割り当てることで通信が可能です。Cloud9はSSMを利用する形式で作成してください。（SSHのアクセスでは少し脆弱かもしれません。NAT構成のネットワークをすでにお持ちの方はプライベートサブネットにインスタンスを配置していただいてもよいと思います。
+スタッフの一名の環境ではパブリックIPが自動で割り振られない状態でしたので、その際のトラブルシュート方法を以下に示します。
+簡易的な方法として、EIPを取得してパブリックサブネットに配置したEC2インスタンスに割り当てることで通信が可能です。Cloud9はSSMを利用する形式で作成してください。（SSHのアクセスでは少し脆弱かもしれません。NAT構成のネットワークをすでにお持ちの方はプライベートサブネットにインスタンスを配置していただいてもよいと思います。
 
 1. EIPを取得する
 ![Alt text](/images/articles/jawsug-nagoya-copilotprimerworkshop-supplement/get-eip.png)
@@ -76,18 +89,19 @@ EC2のコンソールに戻ってEIPのAssociate Elastic IP addressを選択す�
 
 ![Alt text](/images/articles/jawsug-nagoya-copilotprimerworkshop-supplement/create-iamuser8.png)
 
-showを押すとSecret access keyが表示されるので、Access Keyとともに手元に記録してください。
+showを押すとSecret access keyが表示されるので、Access Keyとともに手元に記録してください。*** 誰にも教えず、ハンズオンが終わったら削除してください。絶対に。 ***
 ![Alt text](/images/articles/jawsug-nagoya-copilotprimerworkshop-supplement/create-iamuser9.png)
 
 ## Cloud9環境の設定
 #### ストレージの増量　に関しては実施する必要がありません。実施しようとするとエラーが発生するはずです。
-（このハンズオン記載の方法でストレージを増量させる場合、Cloud9のインスタンスを作成する際のOSイメージをAmazonLinux2に設定してください。）
+このハンズオン記載の方法でストレージを増量させる場合、Cloud9のインスタンスを作成する際のOSイメージをAmazonLinux2に設定してください。
+事前にテストランした際にはストレージを増やさなくても完走することができました。
 
 # Copilotを用いた TODO アプリの作成
 特にありません。
 ## Application と Evironment の作成
 特にありません。
-## baackend Service の作成
+## backend Service の作成
 各コマンドでそこそこ時間を要します。リソースを作成するコマンドは5~7分ほどかかるので、トイレ休憩に都合がよいです。
 
 
@@ -109,13 +123,28 @@ Which Dockerfile would you like to use for frontend? : frontend/Dockerfile を�
 ```
 
 # CI/CDパイプラインの作成
-To write
+下記のコマンドを実行してパイプラインの処理が完了するまでに15分ほどかかります。
+```
+git add -A
+git commit -m 'initial commit'
+git push origin main
+```
+
 ## (オプション)本番環境用アカウントでの準備
-To write
+特になし。
+
 ## Pipeline の作成
-To write
+
+以下のコマンドで、git remoteで始まるコマンドのoriginに登録するURLには利用するリージョンが含まれています。ap-northeast-1を利用している場合は差し替えて実行してください。
+```
+cd ~/environment/copilot-primer-workshop/code
+git init
+git switch -c main
+git remote add origin https://git-codecommit.us-east-1.amazonaws.com/v1/repos/todoapp
+```
 
 # 後片付け
-To write
+特になし。
+
 ## 作成したリソースの削除
 ``` copilot app delete ``` の実行にはかなり時間がかかります。CI/CDパイプラインを作成しない場合でも15分ほどを要します。
