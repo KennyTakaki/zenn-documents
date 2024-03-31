@@ -3,7 +3,7 @@ title: "JAWS DAYS 2024 で100人以上にSay hello した思い出"
 emoji: "😎"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [AWS,JAWSDAYS]
-published: false
+published: true
 ---
 
 # JAWS DAYS 2024 参加のモチベーション
