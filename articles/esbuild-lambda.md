@@ -7,12 +7,12 @@ published: true
 ---
 
 # 概要
-JavaScriptの扱いに慣れておらず、ランタイムをNode.jsにした開発を実施したことがなかった。前回はベタで記述したエントリポイントとパッケージのディレクトリをそのままLambdaFunctionに登録したが、今回はesbuildでバンドリングして実行してみた。結果動作したのでこれでよいと思う。
+Node.jsをランタイムとしたLambdaの開発を実施したことがなく、JavaScriptの周辺ツールの扱いに慣れていない。前回はベタで記述したエントリポイントとパッケージのディレクトリをそのままLambdaFunctionに登録したが、今回はesbuildでバンドリングして実行してみた。結果敵に動作したのでこれでよいと思う。
 
 # 詳細
 [前回](https://zenn.dev/frommiddle1/articles/cloudfront-cognito)の記事でNode.jsのLambda@Edgeの関数コードのサイズ制限に引っかかったと記載したのだが、普通にバンドルすればよいだけだった。
 
-適当に漁ったページにもTypeScriptで記述すればesbuildのバンドルが利用可能だと記述してある。（SAMのドキュメントからだけど、たぶん行けるだろう）
+適当に漁ったページにもTypeScriptで記述すればesbuildのバンドルが利用可能だと記述してある。（SAMのドキュメントが参照もとだけど、たぶん行けるだろう）
 > To build and package Node.js AWS Lambda functions, you can use the AWS SAM CLI with the esbuild JavaScript bundler. The esbuild bundler supports Lambda functions that you write in TypeScript.
 
 ## 手順
