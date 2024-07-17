@@ -1,5 +1,5 @@
 ---
-title: "billing-setting"
+title: "AWS の IAM で請求関連の操作を可能にする"
 emoji: "👋"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [AWS]
