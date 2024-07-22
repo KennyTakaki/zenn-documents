@@ -14,3 +14,6 @@ https://docs.aws.amazon.com/ja_jp/controltower/latest/userguide//decommission-la
 
 廃止後にサイドセットアップするにはマニュアルでの操作が必須らしい。  
 https://docs.aws.amazon.com/ja_jp/controltower/latest/userguide//known-issues-decommissioning.html
+
+Cloudwatch logsの以下のリソースも削除する必要がある@管理アカウント
+aws-controltower/CloudTrailLogs
