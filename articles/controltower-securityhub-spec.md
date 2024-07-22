@@ -3,7 +3,7 @@ title: "Control TowerとSecurity Hubの関係性の整理"
 emoji: "🦁"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [AWS,ControlTower,SecurityHub]
-published: false
+published: true
 ---
 
 # 概要
