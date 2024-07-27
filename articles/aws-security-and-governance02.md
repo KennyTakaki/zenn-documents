@@ -55,3 +55,7 @@ https://docs.aws.amazon.com/controltower/latest/userguide/logging-and-monitoring
 # ルートユーザのパスワード変更って…
 ControlTowerの公式ではパスワード忘れから更新することになってるけど、これ正規プロセス？
 https://docs.aws.amazon.com/controltower/latest/userguide/root-login.html
+
+
+# Control Towerによる推奨コントロール
+https://docs.aws.amazon.com/controltower/latest/controlreference/strongly-recommended-controls.html
