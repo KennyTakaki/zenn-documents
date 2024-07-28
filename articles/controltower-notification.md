@@ -1,5 +1,5 @@
 ---
-title: "ControlTowerの通知系を整理してカスタマイズしたい"
+title: "Control Towerの通知系を整理してカスタマイズしたい"
 emoji: "🐈"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [AWS,ControlTower,SNS,EventBridge]
@@ -19,7 +19,7 @@ published: true
 基本的にはControlTowerのリソースはSCPで保護されており削除、修正をすることが
 
 # ControlTowerのセキュリティの検出、通知系のリソース概要
-ひとまず概要レベルでControlTowerが作成するリソースの関係性を取りまとめてみた。通知にフォーカスしたリソースのみ記述しており、すべてのリソースを記述してはいない。
+ひとまず概要レベルでControlTowerが作成するリソースの関係性を取りまとめてみた。通知にフォーカスしたリソースのみ記述しており、すべてのリソースを記述してはいない。青色で名前を記述しているサービスはリージョンごとにリソースが作成される。
 ![alt text](/images/articles/controltower-notification/arc.png)
 
 リソースに関しての簡易な説明は下記
