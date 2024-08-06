@@ -38,9 +38,11 @@ https://github.com/aws-samples/sagemaker-studio-code-editor-template
 ...なんだ簡単だなと思ったら、デプロイ時にこけました。
 
 # 何が悪かったのか？
-**結論を先に書くと、このソリューションはアカウント内にデフォルトVPCが必要です。**  
-  
-さて、デプロイ時にCloudFormationが止まってしまいました。Create Failedです。
+結論を先に書くと、**リポジトリの説明にもバッチリ書いているように**このソリューションはアカウント内にデフォルトVPCが必要です。 
+（説明を読めや、と自分に突っ込みたい…）
+> To deploy the Code Editor within your default VPC, click the "Launch Stack" button for the corresponding region. The deployment will take approximately 5-10 minutes.
+
+さて念のため確認です。デプロイ時にCloudFormationが止まってしまいました。Create Failedです。
 ![alt text](/images/articles/cloud9-replacement/deploy-failed.png)
 
 エラーメッセージを引用するとカスタムリソースからエラーが返ってきているようです。カスタムリソースのコード内のリストのインデックス外を参照しているような挙動をしています。
@@ -53,7 +55,7 @@ https://github.com/aws-samples/sagemaker-studio-code-editor-template
     vpc_id = res["Vpcs"][0]["VpcId"]
 ```
 
-**デフォルトVPCはセキュリティのプラクティスとして削除することが推奨されていたり、ControlTowerなどから払い出したメンバーアカウントには存在しないことがあります。**
+デフォルトVPCはセキュリティのプラクティスとして削除することが推奨されていたり、ControlTowerなどから払い出したメンバーアカウントには存在しないことがあります。
 そういったアカウントで作業している場合、本ソリューションはここでこけることになります。
 
 # リカバリー方法
