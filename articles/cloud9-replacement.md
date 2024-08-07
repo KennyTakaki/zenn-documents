@@ -59,10 +59,7 @@ https://github.com/aws-samples/sagemaker-studio-code-editor-template
 そういったアカウントで作業している場合、本ソリューションはここでこけることになります。
 
 # リカバリー方法
-デフォルトVPCを再作成することでリカバリーします。
-![alt text](/images/articles/cloud9-replacement/create-default-vpc.png) 
-
-下記画面で「デフォルトVPCを作成」を押す。
+デフォルトVPCを再作成することでリカバリーします。下記画面で「デフォルトVPCを作成」を押す。
 ![alt text](/images/articles/cloud9-replacement/create-default-vpc.png)
 
 これでデフォルトVPCが作成されました。
