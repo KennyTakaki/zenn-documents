@@ -3,7 +3,7 @@ title: "KiroでAmazon流『Working Backwards』を意識してタスク定義し
 emoji: "🔥"
 type: "tech"
 topics: ["aws", "kiro"]
-published: false
+published: true
 ---
 
 # はじめに
