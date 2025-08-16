@@ -75,3 +75,7 @@ Kiro Plan の全プランには Pay-per-use があるため不安を感じ、Q D
 # 今後と感想
 Amazon Q Developerの利用促進が目的なのか、若干kiroのPlanが不利に見えました。今後、この状態で利用して問題なく使えるかなどは不明です。
 個人的にはQ Developerをサブスクリプションしていたらkiroも利用可能（or その逆）だといいなと感じているのですが、どうなるんでしょうね？
+
+# 追記2025/08/18
+個人利用だと従量課金が怖いなーと思っていたら、disable overagesが初期設定で推奨されていたので、プラン変更時に設定するのがよさそうだ。
+Fixed costs: Select the plan that covers your peak usage and disable overages. Usage pauses at your monthly limit and resets the following month.
