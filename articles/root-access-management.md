@@ -42,10 +42,16 @@ Cabpabilities to enableで有効にする機能を選択する。
 (この画面は削除対象のアカウントの画面)
 ![alt text](/images/articles/root-access-management/login-before.png)
 
-削除実行後、管理アカウントから削除を実施したア君とを確認すると、Access Deniedが表示される。
-![alt text](image.png)
-## 既存アカウントの動作確認
-
+削除してすぐはAccess Deniedが吐かれていて、取りつく島がない状態だった。
 ![alt text](/images/articles/root-access-management/Denied.png)
 
-# メリット
+削除対象のアカウントにログインしようとすると、失敗するので期待する動作が実現できている。
+![alt text](/images/articles/root-access-management/FailedLogin.png)
+
+
+しばらく待つと、パスワードリカバリーが可能になった。
+![alt text](/images/articles/root-access-management/AllowPasswordRecovery.png)
+
+# 感想
+メンバーのルートの操作やアクセスの一切を禁止できるので便利だ。特にSecurityHubのIAM.6を無効にできるのはとてもありがたい。メンバー側でのアカウント作成時の機微なタスクを減らしつつ、物理的なMFAデバイスの管理負担がなくなってとても便利だ。
+ただ、新規アカウント登録時にメールアドレスの用意が不要になる、といったものではないので少し残念だった。まぁ、連絡系統が用意できていないと個別のアカウントへのAWSからの案内や通知ができないから当然といえば当然か。
