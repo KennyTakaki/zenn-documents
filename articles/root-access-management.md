@@ -3,7 +3,7 @@ title: "AWSルートアクセスの一元管理でセキュリティを強化す
 emoji: "✨"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["aws","IAM"]
-published: false
+published: true
 ---
 
 # 概要
