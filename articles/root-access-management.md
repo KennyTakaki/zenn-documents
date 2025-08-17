@@ -1,5 +1,5 @@
 ---
-title: "root-access-management"
+title: "AWSルートアクセスの一元管理でセキュリティを強化する"
 emoji: "✨"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["aws","IAM"]
@@ -7,51 +7,58 @@ published: false
 ---
 
 # 概要
-AWSのメンバーアカウントに対するルートアクセスの一元化に関して、以前から気になっていたので触ってみた。
+AWS Organizations のメンバーアカウントに対する **ルートアクセスの一元化** を実際に触ってみたのでまとめる。
 
-# ルートアクセス一元化の手順
-## IAMでの一元化設定の有効化
-ルートアクセスの一元化はIAMの設定画面から行う。この画面はOrganizationsの管理アカウントで設定している。
-![alt text](/images/articles/root-access-management/iam-enable.png)
+# 手順
 
-Cabpabilities to enableで有効にする機能を選択する。
-有効化できる機能は以下2つで、実際にやりたいのはルート認証情報の管理。
+## IAM での一元化設定の有効化
+ルートアクセスの一元化は、**Organizations の管理アカウント**から IAM の設定画面で有効化する。  
+![IAM有効化画面](/images/articles/root-access-management/iam-enable.png)
 
-- ルート認証情報の管理
-  **メンバーアカウントのルート認証情報を削除したり、監査したりできます。** また、特定のメンバーアカウントに対してパスワードリカバリーを許可することも可能です。
+「Capabilities to enable」から有効にする機能を選択する。選べる機能は2種類：
 
-- メンバーアカウントでの特権ルート操作
-  Amazon SQS の誤設定されたポリシーや Amazon S3 の誤設定を削除するなど、メンバーアカウントで特定のルート操作を実行できます。
-![alt text](/images/articles/root-access-management/iam-setting.png)
+- **ルート認証情報の管理**  
+  メンバーアカウントのルート認証情報を削除・監査できる。また、特定アカウントにパスワードリカバリーを許可可能。
 
-ちなみに、このルートアクセスの一元管理も委任できるようだが、どのアカウントに委任するのがいいんだろうか？recommendedになっている。
+- **特権ルート操作**  
+  例: 誤設定された Amazon SQS/S3 のポリシー削除など、特定のルート操作を実行可能。
+
+![IAM設定画面](/images/articles/root-access-management/iam-setting.png)
+
+なお、このルートアクセス管理自体も **委任可能** になっている。推奨（recommended）とあるが、どのアカウントに委任するのがベストかは検討の余地がある。
 
 ## 一元化後の操作
-設定が完了するとIAMのRoot access managementからOrganizationsのヒエラルキーが確認できるようになる。
-![alt text](/images/articles/root-access-management/iam-after-setting.png)
+設定完了後は **IAM > Root access management** から Organizations のヒエラルキーを確認できる。  
+![設定後の画面](/images/articles/root-access-management/iam-after-setting.png)
 
-アカウントを選択してTake Privileged actionを押すことで、ルートアクセスに関する操作が可能。
-![alt text](/images/articles/root-access-management/take-privileged-action.png)
+対象アカウントを選択し **「Take Privileged action」** を押すとルート関連操作を実行できる。  
+![特権アクション](/images/articles/root-access-management/take-privileged-action.png)
 
-選択すると削除される対象の確認が促される。どうやら削除すると
-ルート資格情報（ルートアクセスキー、パスワード、署名証明書）を含む、特定のメンバーアカウントのルート資格情報が削除され、多要素認証（MFA）も削除されるらしい。
-結果としてそのアカウントでルートとしてサインインできなくなる。さらに、通常のルートのパスワードリセットなども無効になる。（仮に必要な場合どのように復帰するんだろう？）
-![alt text](/images/articles/root-access-management/delete-root-user-credentials.png)
+削除対象を確認すると、**ルート資格情報（アクセスキー、パスワード、署名証明書、MFA）がすべて削除** されると案内される。  
+結果としてそのアカウントでは **ルートサインイン不可** となり、通常のパスワードリセットも無効になる。  
+（もし必要になった場合、どう復帰させるのかは気になるところ…）
 
-実行すると、ルートでログインできなくなるようなので、削除対象のアカウントに一度ルートでサインインしてみる。MFAも利用しており、問題なくログインできた。
-(この画面は削除対象のアカウントの画面)
-![alt text](/images/articles/root-access-management/login-before.png)
+![削除確認](/images/articles/root-access-management/delete-root-user-credentials.png)
 
-削除してすぐはAccess Deniedが吐かれていて、取りつく島がない状態だった。
-![alt text](/images/articles/root-access-management/Denied.png)
+実際に対象アカウントへルートでログイン（MFA有効）したところ、問題なく利用可能だった。  
+（削除前のログイン後画面）  
+![ログイン前](/images/articles/root-access-management/login-before.png)
 
-削除対象のアカウントにログインしようとすると、失敗するので期待する動作が実現できている。
-![alt text](/images/articles/root-access-management/FailedLogin.png)
+管理アカウントから削除を実行すると「Access Denied」が表示される。  
+![Access Denied](/images/articles/root-access-management/Denied.png)
 
+その後、対象アカウントでもログインは失敗し、期待通りの動作を確認。  
+![ログイン失敗](/images/articles/root-access-management/FailedLogin.png)
 
-しばらく待つと、パスワードリカバリーが可能になった。
-![alt text](/images/articles/root-access-management/AllowPasswordRecovery.png)
+削除直後は完全に「取りつく島なし」状態だが、しばらくすると **パスワードリカバリーが可能** になる。  
+![パスワードリカバリー](/images/articles/root-access-management/AllowPasswordRecovery.png)
 
 # 感想
-メンバーのルートの操作やアクセスの一切を禁止できるので便利だ。特にSecurityHubのIAM.6を無効にできるのはとてもありがたい。メンバー側でのアカウント作成時の機微なタスクを減らしつつ、物理的なMFAデバイスの管理負担がなくなってとても便利だ。
-ただ、新規アカウント登録時にメールアドレスの用意が不要になる、といったものではないので少し残念だった。まぁ、連絡系統が用意できていないと個別のアカウントへのAWSからの案内や通知ができないから当然といえば当然か。
+- メンバーアカウントのルート操作やアクセスを完全に禁止できるのは便利。  
+- 特に **SecurityHub の IAM.6** を無効化できる点はありがたい。  
+- アカウント作成時のルート管理タスクや物理MFA管理の負担がなくなるのも良い。  
+
+一方で「新規アカウント作成時にメールアドレス不要」にはならないのは少し残念。  
+ただ通知系統を考えると、AWS からの案内を受け取るためにメールが必須なのは当然とも言える。
+
+やってみたあとに気が付いたが[こちら](https://dev.classmethod.jp/articles/root-access-management/)がよくまとまっている。
