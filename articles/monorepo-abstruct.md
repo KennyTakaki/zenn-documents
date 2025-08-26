@@ -2,7 +2,7 @@
 title: "はじめてのモノレポ構築記録 – pnpm × Turborepo × AWS で少しずつ整えてみた"
 emoji: "💨"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["AWS","Monorepo","pnpm","Turborepo","GitHubActions"]
+topics: ["AWS","Monorepo","Turborepo","zennfes2025free"]
 published: false
 ---
 
