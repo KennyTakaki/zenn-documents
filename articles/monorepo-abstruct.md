@@ -344,58 +344,221 @@ Turborepo を入れてみた結果、依存関係を意識せずタスクを実�
 
 
 ## 名前付けの方針
-名前付けの方針として **開発環境（dev）** と **本番環境（prod）** を分けられるようにする、ということを重要視しました。またAWSアカウントはステージごとに用意されているので、それらの切り替えを意識してリソースの中にはAWSアカウントIDも付与するように設計しています。 
-ステージ名を明示的に付与することで、リソースの混在を避けるようにしています。
+名前付けの方針として **開発環境（dev）** と **本番環境（prod）** を分けられるようにする、ということを重要視しました。またAWSアカウントはステージごとに用意されているので、それらの切り替えを意識してリソースの中にはAWSアカウントIDも付与するように設計しています。ステージ名を明示的に付与することで、リソースの混在を避けるようにしています。
+具体的な書式としては以下です。
+`{固有prefix}-{stage}-{accountid}-{project名}-{service名}-{リソース種別}`
 
 例:  
-- `my-project-dev-bucket`  
-- `my-project-prod-bucket`  
+- `assets-dev-123456789012-myproj-web-bucket`  
+- `assets-prod-210987654321-myproj-web-bucket`  
+
+## 実装上の工夫1：Meta 情報を「props」で受け渡す設計
+
+実装で考慮したのは、**ステージ（dev/prod）やアカウントID**のような「横断的なメタ情報（Meta）」を、  **どこで定義して、どうやって各スタック／コンストラクトに伝えるか**という点でした。
+
+最初はスタックやコンストラクトの内部で `process.env` や `cdk.Context` を直接読む実装にしていましたが、  だんだん「どこで値が決まっているのか分かりづらい」「テストしづらい」という問題が出てきました。
+
+そこで方針を改めて、**Meta を型で表現し、スタック／コンストラクトには `props` 経由で明示的に渡す**設計に統一しました。
+
+## 実装上の工夫2:Meta 情報の解決順序（コンテキスト > 環境変数）
+
+もうひとつの実装上の工夫として、Meta 情報を取得するときに **「CDK の context」 と 「環境変数」** を両方考慮し、  **context > 環境変数の順で優先する**ようにしました。
+
+### なぜこの順序か？
+- **context を最優先**  
+  - `cdk deploy --context stage=prod` のように実行時に明示的に指定した値を尊重する  
+  - CI/CD やローカルで意図的に上書きしたいケースに柔軟に対応できる  
+- **環境変数を fallback に**  
+  - `process.env.STAGE=dev` のように普段の開発環境で自動的に設定される値を使う  
+  - context が指定されていない場合にデフォルトのように効く  
+
+これらを考慮して簡単な関数を作成し、命名関数に渡すことでCDK実行時の環境情報を統一的に入力できるようにしました。この関数はエントリポイントのコードでのみ呼び出す方針として、後段のコンストラクトにはpropsでその値を伝えるルールを設けました。
+
+## リソース命名のコードスニペット
+
+```ts
+import type { Construct } from 'constructs';
+
+export interface Meta {
+  stage: string;
+  project: string;
+  service: string;
+}
+
+/** stage / project / service を ①context ②環境変数 ③デフォルト の順に取得 */
+export function getMeta(scope: Construct): Meta {
+  const node = scope.node; // ← ここを Stack.of(scope).node から変更
+
+  const stage = (node.tryGetContext('stage') as string | undefined) ?? process.env.STAGE ?? 'dev';
+
+  const project =
+    (node.tryGetContext('project') as string | undefined) ?? process.env.PROJECT ?? 'myproject';
+
+  const service =
+    (node.tryGetContext('service') as string | undefined) ?? process.env.SERVICE ?? 'web';
+
+  return { stage, project, service };
+}
+
+```
+
+上記のgetMetaで生成したメタな情報を部分的に受け取る前提として作った名前作成のコードが以下です。AWSはリソースによって名前の上限調があるので、そういった値も受け取れるように実装しました。
+
+```ts
+import { Environment } from 'aws-cdk-lib';
+import { Meta } from './meta-util';
+
+export interface NameBuilderOptions {
+  prefix?: string; // 例: bucketNamePrefix
+  maxLen?: number; // 例: S3 は 63
+  requireStartEndAlnum?: boolean; // 先頭末尾を英数字にする（S3向け）
+  includeAccount?: boolean; // account を入れるか
+  includeRegion?: boolean; // region を入れるか
+}
+
+/**
+ * メタデータとenv情報を受け取ってリソース名を生成する関数
+ */
+export function nameBuilder(
+  meta: Meta,
+  env: Environment,
+  resourceType: string,
+  opts: NameBuilderOptions = {},
+): string {
+  const {
+    prefix,
+    maxLen = 63,
+    requireStartEndAlnum = true,
+    includeAccount = true,
+    includeRegion = false,
+  } = opts;
+
+  const { stage, project, service } = meta;
+
+  // セグメントを構築
+  const segments = [
+    prefix,
+    stage,
+    includeAccount ? env.account : undefined,
+    project,
+    service,
+    resourceType,
+    includeRegion ? env.region : undefined,
+  ].filter((v): v is string => !!v && v.length > 0);
+
+  // 名前を生成
+  let name = segments
+    .join('-')
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '-') // 非許可文字→-
+    .replace(/-{2,}/g, '-'); // 連続ハイフン畳む
+
+  // 先頭末尾のハイフンを除去（必要に応じて）
+  if (requireStartEndAlnum) {
+    name = name.replace(/^-+/, '').replace(/-+$/, '');
+  }
+
+  // 最大長で切り詰め
+  name = name.slice(0, maxLen);
+
+  // 再度先頭末尾のハイフンを除去し、空文字ガード
+  if (requireStartEndAlnum) {
+    name = name.replace(/^-+/, '').replace(/-+$/, '');
+    if (!name) name = 'x0'; // 全滅ガード
+  }
+
+  return name;
+}
+
+```
+## CDK ユーティリティの独立とバージョン管理の工夫
+
+インフラ部分で共通的に使う **命名関数や Meta 解決関数** は、せっかくモノレポでワークスペースを利用しているので、  
+`packages/cdk-utils` のように **独立したパッケージ** として切り出しました。  
+これによりスタックやコンストラクトのコードがシンプルになり、再利用性も高まります。
 
 ---
 
-## 命名規則の設計と CDK util の導入
-AWSのインフラ実装にはCDKを利用しています。CI/CDでのデプロイの制御にも関わりますが、開発ステージごとに環境から取得した要素をもとにした名前付けをしてくれるのが望ましいです。
-自動的にデプロイしてくれるの dev / prod に分けるだけでも十分ですが、実際には **命名規則をどう統一するか** が重要になります。  
-AWS のリソースは一度作ると名前の変更が難しいため、最初にルールを決めておくことが運用上の安心につながります。  
+### バージョンずれの課題
 
-そこで、私は **環境変数や CDK の context から値を取得し、命名を一元的に行う仕組み** を導入しました。  
+ただしこのユーティリティ内では `aws-cdk-lib` をインポートしているため、  
+他のインフラパッケージ（例: `packages/infra`）と **CDK のライブラリバージョンがずれる可能性** がありました。  
 
----
-
-
-## ステージ分離の考え方
-当初はすべての環境を一つのバケットにまとめることも考えましたが、以下の理由から dev と prod を分けました。  
-
-- 開発中のアプリを誤って本番に上書きしないようにする  
-- バケットポリシーやアクセス権限を環境ごとに明確にできる  
-- 将来的に CI/CD から自動デプロイする際に分けておいた方が運用しやすい  
-
-「シンプルでも安全に」という方針で、まずは dev/prod の2環境を基本としました。
+モノレポ内で CDK のバージョンが不揃いになると、`cdk synth` や `cdk deploy` が不安定になったり、型定義が一致せずエラーになることもあります。
 
 ---
 
-## 今後の拡張余地
-現状は S3 バケットの作成にとどまっていますが、将来的には以下のような拡張を考えています。  
+### peerDependencies で整合性を担保
 
-- **AWS CDK による IaC 化**  
-  → S3 バケットの定義をコード化し、他のリソースも統合的に管理できるようにする  
-- **Route 53 によるカスタムドメイン設定**  
-  → 静的サイトを独自ドメインで公開する  
-- **API Gateway + Lambda**  
-  → API サーバーをサーバーレスで構築し、S3 でホストするフロントエンドと連携する  
-- **環境ごとの明示的なステージ名付与**  
-  → 将来は S3 以外のリソース（DynamoDB, Cognito など）にも同じ方針を適用する  
+そこで `packages/cdk-utils/package.json` では `aws-cdk-lib` と `constructs` を **peerDependencies** として定義し、  
+利用側（`packages/infra`）に依存関係を委ねるようにしました。  
 
----
+```json
+// packages/cdk-utils/package.json
+{
+  "name": "@myscope/cdk-utils",
+  "version": "1.0.0",
+  "peerDependencies": {
+    "aws-cdk-lib": "2.x",
+    "constructs": "^10.4.0"
+  }
+}
+```
+こうすることで、インフラ側のパッケージとライブラリのバージョンが自動的に揃い、ずれを防止できます。
+
+### pnpm overrides での上書き
+
+さらにルートの package.json に pnpm の overrides を設定し、
+リポジトリ全体で利用する CDK のバージョンを強制的に揃えるようにしました。
+```json
+// package.json (root)
+{
+  "pnpm": {
+    "overrides": {
+      "aws-cdk-lib": "2.206.0",
+      "constructs": "^10.4.2"
+    }
+  }
+}
+```
+
+これによって、仮に下位パッケージで異なるバージョンが依存として解決されたとしても、
+ルートで一元的に上書きされ、常に統一されたバージョンで CDK を利用できるようになっています。
+
 
 ## 振り返り
-初心者としては「まずは S3 でファイルを置けるようにする」ことから始めました。  
-まだ IaC も導入途中ですが、環境を分けて S3 バケットを持つだけでも **「開発環境と本番環境を意識した運用」**を体験できます。  
 
-この小さな一歩が、将来的に CDK や他のサービスを組み合わせて拡張する基盤になると考えています。
+インフラ部分については、まだ S3 バケットを dev / prod に分けて構築するところからのスタートでした。  最初は単純に `my-project-dev-bucket` / `my-project-prod-bucket` のような名前を手で書くだけでも十分だと思っていましたが、CI/CDのことを念頭においたり、一貫性のことを想像すると開発の余地が生まれました。
 
+そこで取り入れた工夫が次の点です。
 
-## CI/CD パイプライン
+- **命名規則の共通化**  
+  - CDK の context や環境変数から取得した情報を基に、`nameBuilder` ユーティリティで統一的にリソース名を生成  
+  - AWS リソースごとの制約（63文字制限や英数字で始まり終わる必要があるなど）も考慮し、自動的に調整できるようにした  
+
+- **Meta 情報の props 化**  
+  - `stage`, `project`, `service` といった横断的なメタ情報を `Meta` 型として定義  
+  - スタックやコンストラクトには `props.meta` として明示的に渡す方針に変更  
+  - これにより「どの値がどこから来ているか」が可視化され、テストやレビューがしやすくなった  
+
+- **context > 環境変数 の優先順**  
+  - `cdk deploy --context stage=prod` のように明示的に指定した値を最優先  
+  - 指定がなければ環境変数を fallback として利用  
+  - これにより CI/CD では context を使って制御、ローカル開発では環境変数だけで自然に動作、という柔軟な運用が可能になった  
+
+- **CDK 用 util パッケージの整備**  
+  - 命名関数や Meta 解決関数を `packages/cdk-utils` にまとめました。
+  - すべてのスタックやコンストラクトから共通利用できるようにし、運用ポリシー変更にも強い構成にした  
+
+---
+
+こうして見ると、最初は「とりあえずバケットを作る」程度の小さな一歩でしたが、  
+命名ルール → Meta props 化 → context/環境変数の優先順 → util パッケージ化 と改善を積み重ねた結果、  
+**将来リソースが増えても安心して拡張できる基盤**ができてきたと感じています。  
+
+インフラはまだシンプルですが、この設計の積み重ねが後の拡張（Route 53, API Gateway, Lambda, DynamoDB など）にも効いてくるはずです。
+
+# CI/CD パイプライン
 
 モノレポを進める中で「動いたコードをどう安全に環境へ反映するか」という課題に直面しました。  
 ローカルでビルドできても、それを本番に手作業でデプロイしてしまうとヒューマンエラーの温床になります。  
@@ -403,7 +566,7 @@ AWS のリソースは一度作ると名前の変更が難しいため、最初�
 
 ---
 
-### 前提条件チェック（prereq ジョブ）
+## 前提条件チェック（prereq ジョブ）
 
 まず最初に走るのが **前提条件のチェック**です。  
 「デプロイに必要な変数やシークレットが設定されているか？」を最初に検査し、足りないものがあれば後続の処理をスキップします。
@@ -417,7 +580,7 @@ AWS のリソースは一度作ると名前の変更が難しいため、最初�
 
 ---
 
-### ステージ判定（set-stage-variable ジョブ）
+## ステージ判定（set-stage-variable ジョブ）
 
 次に「今回の実行が dev / prod / preview のどれなのか」を判定しています。  
 GitHub のイベントは push と PR マージで参照できる変数が違うため、**イベントごとに判定方法を切り替える工夫**をしています。
@@ -430,7 +593,7 @@ GitHub のイベントは push と PR マージで参照できる変数が違う
 
 ---
 
-### ビルド（build ジョブ）
+## ビルド（build ジョブ）
 
 デプロイの前には必ず全体をビルドするようにしました。  
 ここで重要なのは **「一度だけビルドする」** という点です。  
@@ -441,7 +604,7 @@ GitHub のイベントは push と PR マージで参照できる変数が違う
 
 ---
 
-### デプロイ（deploy-dev / deploy-prod ジョブ）
+## デプロイ（deploy-dev / deploy-prod ジョブ）
 
 デプロイは PR がマージされたタイミングだけ動くようにしています。  
 しかも **前提条件が満たされている場合のみ実行**されるので、設定不足のまま間違って本番にデプロイすることはありません。
@@ -458,7 +621,7 @@ CDK を実行するときには `--context stage/project/service` を渡して�
 
 ---
 
-### タグ付け（tag-on-main ジョブ）
+## タグ付け（tag-on-main ジョブ）
 
 最後に、本番 (`main`) にマージされたときだけ自動で Git タグを打つ処理を追加しました。  
 タグは SemVer のパッチ番号を自動で上げるようになっており、これで「どのコミットがどのデプロイに対応しているか」を追いやすくなります。  
@@ -467,7 +630,7 @@ CDK を実行するときには `--context stage/project/service` を渡して�
 
 ---
 
-### コードスニペット
+## コードスニペット
 
 AWS側のロールやOIDCの設定は別途実施する必要がありますが、おおむねGitHub Actionsのコードは以下です。この開発をしている時に、下記を調整するのが一番楽しかったです。
 
