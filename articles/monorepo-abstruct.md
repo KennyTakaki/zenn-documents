@@ -775,7 +775,7 @@ CDK を実行するときには `--context stage/project/service` を渡して�
 
 AWS側のロールやOIDCの設定は別途実施する必要がありますが、おおむねGitHub Actionsのコードは以下です。この開発をしている時に、下記を調整するのが一番楽しかったです。
 
-```
+```yaml
 name: CI Workflow
 
 on:
