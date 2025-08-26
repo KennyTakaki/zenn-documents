@@ -969,8 +969,8 @@ jobs:
 
 # コード品質とセキュリティ設計
 
-モノレポを進めるうえで「コードをどうきれいに保つか」「秘密情報をどう守るか」という課題に直面しました。  
-最初は動けばよいと考えていましたが、規模が少しずつ大きくなるにつれて **「コードレビューで毎回同じ指摘が出る」「誤ってキーをコミットしそうになる」** という不安が強くなってきました。  
+モノレポを進めるうえで「コードをどうきれいに保つか」「秘密情報をどう守るか」という想定課題にもガードレールを適用したくなりました。  
+最初は動けばよいと考えていましたが、生成AIによるコードに対する一定の整理が欲しい、過去にPrivateリポジトリにAPIキーなどをハードコードしている現場をみかけた経験もあり、 **「コードレビュー前に書式は揃えたい」「誤ってキーをコミットしそうになる」** という要求が強くなりました。  
 
 そこで、**コード品質を自動で担保する仕組み**と**セキュリティを強化する仕組み**をモノレポに組み込みました。
 
@@ -993,22 +993,7 @@ jobs:
   - ドキュメントもコードと同じように品質を維持するために導入。  
   - 記事や README を書くときのフォーマットを統一できるので、後から読みやすい状態を保てます。  
 
-結果として、**Lint とフォーマットを CI や Git Hook に組み込む**ことで、コミット時点で問題を自動検出できるようになりました。
-
----
-
-## Git Hooks と Husky
-
-自動化の流れをさらに強化するために **Husky** を導入しました。  
-
-- **pre-commit フック**  
-  - `eslint` / `prettier --check` / `markdownlint` を実行  
-  - 問題があるとコミット自体がブロックされる仕組み  
-
-- **pre-push フック**  
-  - `pnpm test` を実行し、最低限のテストが通らなければリモートに push できないようにしました。  
-
-最初は「フックに時間がかかって面倒かな？」と思いましたが、慣れると **「壊れたコードがリポジトリに入らない安心感」** の方が大きくなりました。
+結果として、**Lint とフォーマットを CI や Git Hook(husky) に組み込む**ことで、コミット時点で問題を自動検出できるようになりました。
 
 ---
 
@@ -1019,12 +1004,96 @@ AWS のアクセスキーや API トークンをうっかりコミットして�
 
 そこで導入したのが **Gitleaks** です。  
 
-- **pre-commit フックに組み込み**  
-  → コミット前に自動スキャンし、もしキーが含まれていれば即ブロック。  
-- **CI でも実行**  
-  → 万が一ローカルフックを bypass しても、PR 時に検出できる二重チェック体制。  
+最初に設定したときは「誤検知（false positive）」に悩まされましたが、`.gitleaks.toml` を調整して不要なパターンを除外することで落ち着きました。特にBase64エンコードされたシークレット検出の正規表現に引っかかるものが多く、pnpm-lock.yaml を除外せずに初回のleaks検出件数が大きくなったのが印象に残っています。
 
-最初に設定したときは「誤検知（false positive）」に悩まされましたが、`.gitleaks.toml` を調整して不要なパターンを除外することで落ち着きました。  
+現在は以下のような除外設定になっています。
+
+```yaml
+paths = [
+  '''(^|.*/)pnpm-lock\.yaml$''',
+  '''^\.devcontainer/setup\.sh$''',
+  '''^\.git/''',
+  '''^node_modules/''',
+  '''^\.turbo/''',
+  '''^\.pnpm-store/''',
+  '''^\.next/''',
+  '''^dist/''',
+  '''^build/''',
+  '''^cdk\.out/''',
+  '''(^|.*/)cdk\.json$'''
+]
+```
+
+leaksの検出対象には、例えばAWSのアクセスキー/シークレットキーなどの検出などを設定に追加して運用しています。
+
+```yaml
+[[rules]]
+id = "aws-access-key"
+description = "AWS Access Key"
+regex = '''AKIA[0-9A-Z]{16}'''
+tags = ["aws", "key", "access"]
+
+[[rules]]
+id = "aws-secret-key"
+description = "AWS Secret Key"
+regex = '''(?i)aws(.{0,20})?(secret|access)?(.{0,20})?(key)?(.{0,20})?[=:]["']?[A-Za-z0-9/+=]{40}['"]?'''
+tags = ["aws", "key", "secret"]
+```
+
+---
+
+## Git Hooks と Husky
+
+自動化の流れを強化するために **Husky** を導入しました。  
+
+- **pre-commit フック**  
+  - `eslint` / `prettier --check` / `markdownlint` を実行  
+  - 問題があるとコミット自体がブロックされる仕組み  
+
+- **pre-push フック**  
+  - `pnpm test` を実行し、最低限のテストが通らなければリモートに push できないようにしました。  
+
+#### pre-commit
+```bash
+#!/usr/bin/env sh
+pnpm run lint:all
+pnpm run format:all
+pnpm run test:all
+
+gitleaks detect \
+  --config=gitleaks.toml \
+  --source=. \
+  --redact \
+  --report-path gitleaks-report.json
+
+STATUS=$?
+if [ $STATUS -ne 0 ]; then
+  echo "🛑 Gitleaks found issues. Commit aborted."
+  exit 1
+fi
+
+```
+
+#### pre-push
+```bash
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Prohibit direct push to dev and main branches
+protected_branches="main dev"
+branch=$(git symbolic-ref --short HEAD)
+
+for b in $protected_branches; do
+  if [ "$branch" = "$b" ]; then
+    echo "❌ Push to '$branch' is blocked by Husky hook."
+    echo "✅ Please push from a feature or fix branch instead."
+    exit 1
+  fi
+done
+```
+
+
+最初は「フックに時間がかかって面倒かな？」と思いましたが、慣れると **「壊れたコードがリポジトリに入らない安心感」** の方が大きくなりました。
 
 ---
 
