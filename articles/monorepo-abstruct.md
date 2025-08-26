@@ -564,10 +564,84 @@ export function nameBuilder(
 ローカルでビルドできても、それを本番に手作業でデプロイしてしまうとヒューマンエラーの温床になります。  
 そこで GitHub Actions を使って、**自動でテスト・ビルドし、環境に応じて安全にデプロイするパイプライン**を組みました。
 
+また、AWS との接続方法については **OIDC (OpenID Connect)** をベースに設計しています。  
+従来のように長期利用のアクセスキーを Secrets に置かず、GitHub Actions 実行時に OIDC トークンを発行 → AWS 側で一時的に信頼関係を結ぶことで、  
+よりセキュアかつシンプルに認証・認可が行えるようになっています。  
+
+## AWSでの事前準備
+[基本的にはこちらのブログを参考にしました。](https://zenn.dev/kou_pg_0131/articles/gh-actions-oidc-aws)
+
+また、OIDC を利用する場合は **AWS 側で事前設定を行う必要**があります。  
+セキュリティ上重要になるのが、IAM ロールにおける **GitHub Actions に対する信頼関係の設定**です。  
+
+IAM ロールの信頼ポリシーでは、OIDC プロバイダを `arn:aws:iam::{accountid}:oidc-provider/token.actions.githubusercontent.com` として指定し、  
+`sts:AssumeRoleWithWebIdentity` を許可します。  
+
+さらに Condition 句で制限をかけることで、**「どのリポジトリから」「どのイベントで」発行されたトークンを受け入れるか**を細かくコントロールできます。  
+
+特に **StringLike 句** がセキュリティの肝になります。  
+以下のように指定することで、  
+- `repo:{username}/{reponame}:ref:refs/heads/dev` → `dev` ブランチの実行だけ許可  
+- `repo:{username}/{reponame}:pull_request` → PR 実行だけ許可  
+
+という形で、想定外のブランチやリポジトリからのトークン利用を防げます。  
+
+開発ステージごとに AWS 環境を切り替える場合は、IAM ロールの信頼ポリシーに記述する Condition 句 もステージごとに調整する必要があります。具体的には、dev 環境であれば refs/heads/dev、prod 環境であれば refs/heads/main のように、ブランチ名と環境を対応付けて StringLike 句を設定することで、各ステージごとのデプロイを正しく制御できます。
+
+下記はdevというブランチが運用上存在していて、ついとなるAWSアカウントにロールを設定する場合の信頼関係のドキュメントです。
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Federated": "arn:aws:iam::{accountid}:oidc-provider/token.actions.githubusercontent.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+                "StringEquals": {
+                    "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+                },
+                "StringLike": {
+                    "token.actions.githubusercontent.com:sub": [
+                        "repo:{username}/{reponame}:ref:refs/heads/dev",
+                        "repo:{username}/{reponame}:pull_request"
+                    ]
+                }
+            }
+        }
+    ]
+}
+```
+
+今回 IAM ロールに対して設定したポリシーは、以下のような内容になっています。Assumeする先のリソースcdk-hnb659fds-... という名前は、CDK のブートストラップ時に自動で作成されるリソースです。具体的には CDK が cdk bootstrap を実行した際に、CloudFormation スタックを通じてデプロイようのIAM ロールを生成しており、それを利用します。
+
+``` json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Statement1",
+            "Effect": "Allow",
+            "Action": [
+                "sts:AssumeRole"
+            ],
+            "Resource": [
+                "arn:aws:iam::{accountid}:role/cdk-hnb659fds-deploy-role-{accountid}-ap-northeast-1"
+            ]
+        }
+    ]
+}
+```
+
 ---
 
-## 前提条件チェック（prereq ジョブ）
+## GitHubにおける環境変数と値の設定
+やっとGitHub Actions側の記述に戻ってこれました。
 
+## 前提条件チェック（prereq ジョブ）
 まず最初に走るのが **前提条件のチェック**です。  
 「デプロイに必要な変数やシークレットが設定されているか？」を最初に検査し、足りないものがあれば後続の処理をスキップします。
 
@@ -619,6 +693,21 @@ GitHub のイベントは push と PR マージで参照できる変数が違う
 AWS への認証には **OIDC** を使っており、長期のアクセスキーを Secrets に置かなくてもよくなりました。  
 CDK を実行するときには `--context stage/project/service` を渡しており、環境やサービス名ごとに命名規則を自動で適用できるようにしています。
 
+### 学びと工夫
+
+実際に動作させてみて分かったのは、**GitHub Actions ではジョブ間で仮想マシンの状態が引き継がれない**という点です。そのため、ビルド済みの成果物をデプロイジョブでそのまま使うことはできず、  
+**デプロイ直前に `pnpm -w run build:all` を再実行する必要がある**という学びがありました。  
+
+さらに、CDK のスタックは `packages/infra` ディレクトリから実行されるため、  
+例えばバケット名を生成する命名関数のように **別パッケージにあるユーティリティに依存**するケースがあります。  
+この依存関係を正しく解決するためには、**単一パッケージのビルドではなく `-w` オプションを付けてワークスペース全体をビルド**する必要がありました。（buildステップではrootでコマンド実行していたので`-w`オプションを付ける必要がなく、この仕様に気が付くまでに時間がかかりました。）  
+
+結果として、  
+- **毎回ジョブごとにビルドをやり直す**（ジョブ間状態は共有されない）  
+- **依存解決のために全体をビルドする**（`pnpm -w run build:all`）  
+
+という手順が CI/CD パイプラインに組み込まれ、安定したデプロイを実現できるようになりました。
+
 ---
 
 ## タグ付け（tag-on-main ジョブ）
@@ -626,7 +715,7 @@ CDK を実行するときには `--context stage/project/service` を渡して�
 最後に、本番 (`main`) にマージされたときだけ自動で Git タグを打つ処理を追加しました。  
 タグは SemVer のパッチ番号を自動で上げるようになっており、これで「どのコミットがどのデプロイに対応しているか」を追いやすくなります。  
 
-最初はタグを手動で打っていましたが、忘れたり作法がバラバラになったりしていたので、自動化してからは履歴がとても綺麗になりました。
+最初はタグを手動で打っていましたが、忘れたり作法がバラバラになったりしていたので、自動化してからは履歴が部分的にきれいにできたと思っています。
 
 ---
 
@@ -748,6 +837,7 @@ jobs:
         working-directory: packages/infra
         run: |
           pnpm install
+          pnpm -w run build:all
           pnpm cdk deploy --require-approval never \
             --context stage=${{ env.STAGE }} \
             --context project=${{ env.PROJECT }} \
