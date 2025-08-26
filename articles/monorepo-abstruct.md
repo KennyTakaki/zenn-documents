@@ -260,6 +260,21 @@ Turborepo では、ルートに `turbo.json` を配置してタスクを定義�
   }
 }
 ```
+
+加えて、ルートのpackage.jsonのsciprt句には以下のように記述しています。
+```json
+  "scripts": {
+    "dev:all": "turbo run dev",
+    "build:all": "turbo run build",
+    "format:all": "turbo run format",
+    "lint:all": "turbo run lint",
+    "test:all": "turbo run test",
+    "typecheck:all": "turbo run typecheck",
+    "prepare": "husky",
+    "lint:md": "markdownlint-cli2"
+  },
+```
+
 ここでのポイントは以下です。
 
 - build タスク
