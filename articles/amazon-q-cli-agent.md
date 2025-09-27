@@ -42,8 +42,34 @@ Agent では特定ツールの事前承認や関連コンテキストの自動�
   help         Print this message or the help of the given subcommand(s)
 ```
 
+# カスタムエージェントの作成
+
 さっそく最初の agent を作成してみます。
 
 ```
-/agent create
+/agent create -n agent-my-first
+```
+
+コマンド入力すると、エディタが立ち上がって以下のようなエージェントの設定ファイルを編集できます。保存して`Agent agent-my-firs has been created successfully`のメッセージがでたらエージェント作成が完了です。
+
+```
+{
+  "$schema": "https://raw.githubusercontent.com/aws/amazon-q-developer-cli/refs/heads/main/schemas/agent-v1.json",
+  "name": "agent-my-first",
+  "description": "",
+  "prompt": null,
+  "mcpServers": {},
+  "tools": [
+    "*"
+  ],
+  "toolAliases": {},
+  "allowedTools": [],
+  "resources": [
+    "file://AmazonQ.md",
+    "file://AGENTS.md",
+    "file://README.md",
+    "file://.amazonq/rules/**/*.md"
+  ],
+  ...
+}
 ```
