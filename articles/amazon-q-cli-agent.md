@@ -57,19 +57,60 @@ Agent では特定ツールの事前承認や関連コンテキストの自動�
   "$schema": "https://raw.githubusercontent.com/aws/amazon-q-developer-cli/refs/heads/main/schemas/agent-v1.json",
   "name": "agent-my-first",
   "description": "",
-  "prompt": null,
-  "mcpServers": {},
-  "tools": [
-    "*"
-  ],
-  "toolAliases": {},
-  "allowedTools": [],
-  "resources": [
-    "file://AmazonQ.md",
-    "file://AGENTS.md",
-    "file://README.md",
-    "file://.amazonq/rules/**/*.md"
-  ],
   ...
+}
+```
+
+エージェントの設定ファイルはデフォルトではグローバルカスタムエージェントの出力ティレク取りに保存されます。グローバルカスタムエージェントのパスは以下です。
+
+`~/.aws/amazonq/cli-agents/{agent-name}.json`
+
+確認してみると、ファイルが作成されていることがわかります。
+
+```
+ls ~/.aws/amazonq/cli-agents/
+agent_config.json.example  agent-my-first.json
+```
+
+プロジェクトレベルのカスタムエージェントを作成したい場合にはコマンド実行時に `-d` オプションを指定します。プロジェクトレベルのカスタムエージェントのパスは以下です。
+`.amazonq/cli-agents/{agent-name}.json`
+-d は.amazonq/cli-agents からの相対ディレクトリになっているようで`.`を指定するだけで`.amazonq/cli-agents`にファイルが配置されました。
+
+```
+/agent create -n project-agent -d .
+```
+
+確認してみるとファイル作成がなされています。
+
+```
+ls .amazonq/cli-agents/project-agent.json
+.amazonq/cli-agents/project-agent.json
+```
+
+エージェントはプロジェクト（ローカル）→ グローバル → ビルトインのエージェントの順に読み込まれます。今回はプロジェクトに対するエージェントを開発していきます。
+
+エージェント作成には generate コマンドも利用ができます。少量のインタラクションに回答すると、generate コマンドがエージェントファイルを出力します。この出力には prompt 部分にシステムプロンプトが設定されます。
+
+```
+[my-default-agent] > /agent generate
+
+✔ Enter agent name:  generated-agent
+✔ Enter agent description:  このエージェントはTypeSciptでWeb開発するためのものです
+✔ Agent scope Local (current workspace)
+Select MCP servers (use Space to toggle, Enter to confirm):
+
+```
+
+出力には最初から prompt が記述されています。
+
+```
+{
+  "$schema": "https://raw.githubusercontent.com/aws/amazon-q-developer-cli/refs/heads/
+main/schemas/agent-v1.json",
+  "name": "generated-agent",
+  "description": "このエージェントはTypeSciptでWeb開発するためのものです",
+  "prompt": "You are a specialized TypeScript web development assistant. Help users with TypeScript code, web development best practices, modern frameworks, debugging, and optimization. Focus on providing clean, type-safe solutions and following current TypeScript and web development standards.",
+  "mcpServers": {},
+　...
 }
 ```
