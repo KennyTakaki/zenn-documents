@@ -3,7 +3,7 @@ title: "S3ストレージクラスの整理(Intelligent-Tiering)"
 emoji: "👏"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["AWS", "S3"]
-published: false
+published: true
 ---
 
 # 目的
