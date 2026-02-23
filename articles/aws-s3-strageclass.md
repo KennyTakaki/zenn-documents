@@ -57,3 +57,9 @@ export class PhotoSystemStack extends cdk.Stack {
   }
 }
 ```
+
+# 追記
+上記のコードでは思ったように設定できなかった。現時点でArchive Accessだけを切ろうと思ったらL1コンストラクタで記述する必要があるようで面倒だ。はっきりライフサイクルがわかっているなら、そちらで設定する方がよさそう。
+![alt text](/images/articles/aws-s3-strageclass/result.png)
+
+ただ、今回はIntelligent-Tieringを使ってみたい気持ちもあるので、DeepArchive Access
