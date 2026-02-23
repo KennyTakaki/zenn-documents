@@ -64,3 +64,21 @@ export class PhotoSystemStack extends cdk.Stack {
 ![alt text](/images/articles/aws-s3-strageclass/result.png)
 
 ただ、今回はIntelligent-Tieringを使ってみたい気持ちもあるので、DeepArchive Access と Archive Access クラスを同一サイクルで運用する。一時的にArchive Access クラスが適用される可能性があるけれども、ほぼ同一タイミングでDeepArchiveに移行するはずだ。
+
+追記：と思っていたが、この２つのパラメータを同じ日数に指定すると合成時にエラーが出た。
+
+```
+Days specified in DEEP_ARCHIVE_ACCESS should be greater than days specified in ARCHIVE_ACCESS
+```
+
+ワークアラウンドの処置として以下のような実装で対応した。
+
+```ts
+      intelligentTieringConfigurations: [
+        {
+          name: 'archive-config',
+          archiveAccessTierTime: cdk.Duration.days(179),
+          deepArchiveAccessTierTime: cdk.Duration.days(180),
+        },
+      ],
+```
