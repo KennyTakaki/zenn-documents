@@ -8,8 +8,7 @@ published: true
 
 # 目的
 
-家族写真が増えてきて、どこにアーカイブを持っていこうかなぁと検討していたのですが、AWSが手になじんている
-こともあり結局S3に保存することにしました。iCloud、GooglePhoto、Amazon Photoなどとの比較はこちらでも比較しているのですが、
+家族写真が増えてきて、どこにアーカイブを持っていこうかなぁと検討していたのですが、AWSが手になじんていることもあり結局S3に保存することにしました。iCloud、GooglePhoto、Amazon Photoなどとの比較はこちらでも比較しているのですが、
 https://speakerdeck.com/kennytakaki/jia-zu-noxie-zhen-dong-hua-dokonibao-cun-sitemasuka-jawsug-nagoya-20260131
 S3のストレージクラスとIntelligent-Tieringの料金と仕様を事前にまとめておきたいので、記事を作成した。
 
