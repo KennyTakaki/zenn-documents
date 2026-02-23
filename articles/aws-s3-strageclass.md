@@ -47,7 +47,7 @@ export class PhotoSystemStack extends cdk.Stack {
         {
           name: 'archive-config',
           // Archive Access クラスにはうまみがないのでコメントアウト、使う場合はとる
-          // archiveAccessTierTime: cdk.Duration.days(90),
+          archiveAccessTierTime: cdk.Duration.days(180),
 
           //Deep Archive Accessだけを所定期間で有効にする。半年。
           deepArchiveAccessTierTime: cdk.Duration.days(180),
@@ -59,7 +59,8 @@ export class PhotoSystemStack extends cdk.Stack {
 ```
 
 # 追記
+
 上記のコードでは思ったように設定できなかった。現時点でArchive Accessだけを切ろうと思ったらL1コンストラクタで記述する必要があるようで面倒だ。はっきりライフサイクルがわかっているなら、そちらで設定する方がよさそう。
 ![alt text](/images/articles/aws-s3-strageclass/result.png)
 
-ただ、今回はIntelligent-Tieringを使ってみたい気持ちもあるので、DeepArchive Access
+ただ、今回はIntelligent-Tieringを使ってみたい気持ちもあるので、DeepArchive Access と Archive Access クラスを同一サイクルで運用する。一時的にArchive Access クラスが適用される可能性があるけれども、ほぼ同一タイミングでDeepArchiveに移行するはずだ。
